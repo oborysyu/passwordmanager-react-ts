@@ -39,13 +39,12 @@ export function PasswordItem({ pass }: PasswordProps) {
   };
 
   useEffect(() => {
-    if (login) {
-      setLoginText(login);
-    }
-    if (password) {
-      setPassText(password);
-    }
-  }, [password, login]);
+    setLoginText(login);
+  }, [login]);
+
+  useEffect(() => {
+    setPassText(password);
+  }, [password]);
 
   return (
     <div className="password-item">

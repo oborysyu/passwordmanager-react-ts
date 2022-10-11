@@ -50,53 +50,41 @@ export function useUsersAndTheirPasswords() {
     }
   };
 
+  const save = (updatedPasswords:IPassword[]) => {
+    if (!currentUser) return;
+    let clonedData = users.concat();
+    const ind = users.findIndex(
+      (obj) => obj.username === currentUser.username
+    );
+    clonedData[ind].passwordsBase = updatedPasswords;
+    setUsers(clonedData);
+    saveDataInLocalStorage(clonedData);    
+  }
   const funcs = {
     addPassword: function (item: { resource: string; password: string }) {
       if (!currentUser) return;
-      let clonedData = users.concat();
-      const updatedPasswords = currentUser.passwordsBase.concat();
-      updatedPasswords.push({
+      currentUser.passwordsBase.push({
         id: Date.now(),
         login: item.resource,
         password: item.password,
       });
-      const ind = users.findIndex(
-        (obj) => obj.username === currentUser.username
-      );
-      clonedData[ind].passwordsBase = updatedPasswords;
-      setUsers(clonedData);
-      saveDataInLocalStorage(clonedData);
+      save(currentUser.passwordsBase);
     },
 
     removePassword: function (id: number) {
       if (!currentUser) return;
-      let clonedData = users.concat();
-      let updatedPasswords = currentUser.passwordsBase.concat();
-      updatedPasswords = updatedPasswords.filter((pass) => pass.id !== id);
-      const ind = users.findIndex(
-        (obj) => obj.username === currentUser.username
-      );
-      clonedData[ind].passwordsBase = updatedPasswords;
-      setUsers(clonedData);
-      saveDataInLocalStorage(clonedData);
+      save(currentUser.passwordsBase.filter((pass) => pass.id !== id));
     },
 
     updatePassword: function (item: IPassword) {
       if (!currentUser) return;
-      let clonedData = users.concat();
-      const updatedPasswords = currentUser.passwordsBase.map((pass) => {
+      save(currentUser.passwordsBase.map((pass) => {
         if (pass.id === item.id) {
           pass.login = item.login;
           pass.password = item.password;
         }
         return pass;
-      });
-      const ind = users.findIndex(
-        (obj) => obj.username === currentUser.username
-      );
-      clonedData[ind].passwordsBase = updatedPasswords;
-      setUsers(clonedData);
-      saveDataInLocalStorage(clonedData);
+      }));
     },
   };
   return { users, addUser, getUsers, logInUser, signOut, currentUser, funcs };
